@@ -1,4 +1,6 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
@@ -8,14 +10,39 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask _unitLayers;
     [SerializeField] private LayerMask _floorLayers;
     [SerializeField] private GameObject clickEffectPrefab;
+    [SerializeField] private TextMeshProUGUI _statusText;
     
     
     private Vector2 StartMousePosition;
+    private bool _isDrawingSelection;
+    private bool _isWaitingForPatrolClick = false;
     
     private void Update()
     {
         HandleSelectionInputs();
         HandleMovementInputs();
+    }
+    
+    public void SetPatrolMode()
+    {
+        _isWaitingForPatrolClick = !_isWaitingForPatrolClick;
+
+        if (_isWaitingForPatrolClick)
+        {
+            UpdateStatusText("Ready to patrol");
+        }
+        else
+        {
+            UpdateStatusText("Not ready for patrol");
+        }
+    }
+    
+    private void UpdateStatusText(string message)
+    {
+        if (_statusText != null)
+        {
+            _statusText.text = message;
+        }
     }
 
     private void HandleMovementInputs()
@@ -31,10 +58,24 @@ public class PlayerController : MonoBehaviour
                     Vector3 effectPos = hit.point + new Vector3(0, 0.1f, 0);
                     Instantiate(clickEffectPrefab, effectPos, Quaternion.Euler(90, 0, 0));
                 }
-                foreach (SelectableUnit unit in SelectionManager.Instance.SelectedUnits)
+                
+                if (_isWaitingForPatrolClick)
                 {
-                    unit.MoveTo(hit.point);
+                    foreach (SelectableUnit unit in SelectionManager.Instance.SelectedUnits)
+                    {
+                        unit.StartPatrol(hit.point);
+                    }
+                    _isWaitingForPatrolClick = false;
+                    UpdateStatusText("Patrol started!");
                 }
+                else
+                {
+                    foreach (SelectableUnit unit in SelectionManager.Instance.SelectedUnits)
+                    {
+                        unit.MoveTo(hit.point);
+                    }
+                }
+                
             }
         }
     }
@@ -43,14 +84,26 @@ public class PlayerController : MonoBehaviour
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                _isDrawingSelection = false; 
+                return; 
+            }
+            
+            _isDrawingSelection = true;
             SelectionBox.sizeDelta = Vector2.zero;
             SelectionBox.gameObject.SetActive(true);
             StartMousePosition = Mouse.current.position.ReadValue();
-        } else if (Mouse.current.leftButton.isPressed)
+        } 
+        
+        else if (Mouse.current.leftButton.isPressed && _isDrawingSelection)
         {
             ResizeSelectionBox();
-        } else if (Mouse.current.leftButton.wasReleasedThisFrame)
+        } 
+    
+        else if (Mouse.current.leftButton.wasReleasedThisFrame)
         {
+            _isDrawingSelection = false;
             SelectionBox.sizeDelta = Vector2.zero;
             SelectionBox.gameObject.SetActive(false);
         }

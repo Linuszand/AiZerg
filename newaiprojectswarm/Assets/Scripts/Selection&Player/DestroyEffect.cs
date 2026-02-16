@@ -10,14 +10,15 @@ public class DestroyEffect : MonoBehaviour
     void Start()
     {
         transform.localScale = startScale;
+        duration = 0.8f;
     }
 
     void Update()
     {
         _timer += Time.deltaTime;
         float progress = _timer / duration;
-        
-        transform.localScale = Vector3.Lerp(startScale, Vector3.zero, progress);
+        //                                 (8, 8, 8)    (0, 0, 0)       0.5
+        transform.localScale = Vector3.Lerp(new Vector3(20, 20, 20), Vector3.zero, progress);
 
         if (progress >= 1.0f)
         {
