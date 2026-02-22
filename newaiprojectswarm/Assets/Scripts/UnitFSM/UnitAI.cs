@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class UnitAI : MonoBehaviour
 {
-    private SelectableUnit _unit;
-    private UnitPatrol _patrol;
-    
     [Header("Settings")]
     public float chaseRange = 10f;
     public Transform target;
+    
+    private SelectableUnit _unit;
+    private UnitPatrol _patrol;
 
     void Awake()
     {
@@ -25,16 +25,25 @@ public class UnitAI : MonoBehaviour
         }
     }
 
-    public void AIStates(TravelMode mode, float distanceToTarget)
+    void SwitchToChasing(TravelMode mode, float distanceToTarget)
     {
         if (target != null && distanceToTarget <= chaseRange)
         {
             if (mode != TravelMode.Chasing)
             {
                 _unit.SwitchState(TravelMode.Chasing);
-                return;
             }
         }
+    }
+
+    public void AIStates(TravelMode mode, float distanceToTarget)
+    {
+        if (mode != TravelMode.Parking)
+        {
+            _unit.TravelingSeparation();
+        }
+        
+        SwitchToChasing(mode, distanceToTarget);
         
         switch (mode)
         {
@@ -52,19 +61,13 @@ public class UnitAI : MonoBehaviour
     
     private void UpdatePatrolLogic(float distanceToTarget)
     {
-        _unit.TravelingSeparation();
+        // makes sure the unit patrols back and forth between pointA and pointB
         _patrol.BackAndForthPatrol();
-
-        if (target != null && distanceToTarget <= chaseRange)
-        {
-            _unit.SwitchState(TravelMode.Chasing);
-        }
+        
     }
-
+    
     private void UpdateChasingLogic(float distanceToTarget)
     {
-        _unit.TravelingSeparation();
-        
         if (target != null)
         {
             _unit._agent.SetDestination(target.position);
@@ -82,19 +85,15 @@ public class UnitAI : MonoBehaviour
 
     private void UpdateReturningLogic(float distanceToTarget)
     {
-        _unit.TravelingSeparation();
+        bool hasArrived = !_unit._agent.pathPending &&
+                          _unit._agent.remainingDistance <= _unit._agent.stoppingDistance + _unit.ArrivalThreshold;
         
-        if (!_unit._agent.pathPending && _unit._agent.remainingDistance <= _unit._agent.stoppingDistance + 0.1f)
+        if (hasArrived || _unit._agent.velocity.sqrMagnitude < 0.01f)
         {
             if (_unit.isPatrolling)
                 _unit.SwitchState(TravelMode.Patrol);
             else
                 _unit.SwitchState(TravelMode.Parking);
-        }
-
-        if (target != null && distanceToTarget <= chaseRange)
-        {
-            _unit.SwitchState(TravelMode.Chasing);
         }
     }
 }

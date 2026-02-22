@@ -3,11 +3,14 @@ using UnityEngine.AI;
 
 public class UnitPatrol : MonoBehaviour
 {
+    [Header("Patrol settings")]
+    [SerializeField] private float _waypointTolerance = 1.5f;
+    
     private Vector3 _pointA;
     private Vector3 _pointB;
+    
     private bool _isGoingToB = true;
     
-    [SerializeField] private float _waypointTolerance = 1.5f;
     private NavMeshAgent _agent;
 
     void Awake()

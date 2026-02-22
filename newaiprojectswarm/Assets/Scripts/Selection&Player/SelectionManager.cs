@@ -6,8 +6,6 @@ public class SelectionManager
 {
     private static SelectionManager _instance;
     
-    public static Action<float, float, float> OnUnitSelected;
-    
     public static SelectionManager Instance
     {
         get
@@ -24,6 +22,8 @@ public class SelectionManager
         }
     }
     
+    public static Action<float, float, float, float> OnUnitSelected;
+    
     public HashSet<SelectableUnit> SelectedUnits = new HashSet<SelectableUnit>();
     public List<SelectableUnit> AvailableUnits = new List<SelectableUnit>();
     
@@ -36,7 +36,7 @@ public class SelectionManager
         SelectedUnits.Add(unit);
         unit.OnSelected();
         
-        OnUnitSelected?.Invoke(unit.SeparationRadius, unit.SeparationForce, unit.ArrivalThreshold);
+        OnUnitSelected?.Invoke(unit.SeparationRadius, unit.SeparationForce, unit.ArrivalThreshold, unit.Damping);
         
         NotifyFormationChanged();
     }

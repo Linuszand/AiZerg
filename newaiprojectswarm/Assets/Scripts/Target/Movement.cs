@@ -6,10 +6,13 @@ using UnityEngine.InputSystem;
 
 public class Movement : MonoBehaviour
 {
-    public InputAction playerControls;
-    Vector3 moveDirection = Vector3.zero;
+    [Header("Movement Settings")]
+    [SerializeField] private int moveSpeed = 5;
+    
+    private Vector3 moveDirection = Vector3.zero;
     private Rigidbody rb;
-    private int moveSpeed = 5;
+    
+    public InputAction playerControls;
     
     void Start()
     {
@@ -25,7 +28,8 @@ public class Movement : MonoBehaviour
     {
         playerControls.Disable();
     }
-    
+
+
     void Update()
     {
         moveDirection = playerControls.ReadValue<Vector3>().normalized;
@@ -33,6 +37,6 @@ public class Movement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
+        rb.MovePosition(transform.position + moveDirection * (Time.fixedDeltaTime * moveSpeed));
     }
 }
