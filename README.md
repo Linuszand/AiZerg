@@ -2,7 +2,9 @@
 
 Controls:
 
-Move red capsule target with WASD, Selecting units by holding and dragging LMB. Move them with RMB.
+Move red capsule target with WASD.
+
+Select cyan capsules by holding LMB down and dragging it. Move capsules with RMB when selected.
 
 Tweak in-game values with the sliders and Patrol units with the patrol button.
 
