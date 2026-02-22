@@ -346,6 +346,12 @@ public class SelectableUnit : MonoBehaviour
       {
          Gizmos.color = Color.green;
          Gizmos.DrawWireSphere(transform.position, SeparationRadius);
+
+         if (SeparationForce >= 0.1f)
+         {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawRay(transform.position, lastFrameSeparationForce);
+         }
          
          if (_separationVelocity.magnitude > 0.1f)
          {
