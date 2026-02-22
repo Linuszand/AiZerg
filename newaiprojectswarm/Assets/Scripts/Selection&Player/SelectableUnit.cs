@@ -205,11 +205,10 @@ public class SelectableUnit : MonoBehaviour
       // 1 / 10 = 0.1
       float smoothness = 1.0f / Damping;
 
-      // I wanted to somehow stop jittering when units are close to target
-      if (!_agent.pathPending && _agent.remainingDistance <= 1f)
+      // I wanted to somehow stop jittering when units are close to target.
+      if (!_agent.pathPending && _agent.remainingDistance <= ArrivalThreshold)
       {
-         // goes from something to zero
-         _separationVelocity = Vector3.Lerp(_separationVelocity, Vector3.zero, Time.deltaTime * smoothness);
+         _separationVelocity = Vector3.zero;
          return; 
       }
       

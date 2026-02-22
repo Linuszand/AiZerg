@@ -35,9 +35,10 @@ public class UnitAI : MonoBehaviour
             }
         }
     }
-
+    
     public void AIStates(TravelMode mode, float distanceToTarget)
     {
+        // if mode is not parking we apply TravelingSeparation
         if (mode != TravelMode.Parking)
         {
             _unit.TravelingSeparation();

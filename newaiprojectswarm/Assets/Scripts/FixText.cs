@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// scripot that simply points text text towards the camera so we can see it
 public class FixText : MonoBehaviour
 {
     private Transform _cameraTransform;

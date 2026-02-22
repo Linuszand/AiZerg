@@ -25,11 +25,12 @@ public class UnitPatrol : MonoBehaviour
         _isGoingToB = true;
         _agent.SetDestination(_pointB);
     }
-
+    // goes back and forth between two points
     public void BackAndForthPatrol()
     {
         if (!_agent.pathPending && _agent.remainingDistance <= _waypointTolerance)
         {
+            // negation
             _isGoingToB = !_isGoingToB;
             Vector3 nextDestination = _isGoingToB ? _pointB : _pointA;
             _agent.SetDestination(nextDestination);
